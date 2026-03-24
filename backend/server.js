@@ -19,37 +19,44 @@ const server = http.createServer(app);
 app.use(cors());
 app.use(express.json());
 
-const db = initDB();
+async function start() {
+  const db = await initDB();
 
-const taskQueue = new TaskQueue(db);
-const agentManager = new AgentManager(db);
-const acpServer = new ACPServer(server, db, agentManager);
-const orchestrator = new OrchestratorEngine(db, agentManager, taskQueue, acpServer);
+  const taskQueue = new TaskQueue(db);
+  const agentManager = new AgentManager(db);
+  const acpServer = new ACPServer(server, db, agentManager);
+  const orchestrator = new OrchestratorEngine(db, agentManager, taskQueue, acpServer);
 
-app.use((req, _res, next) => {
-  req.db = db;
-  req.agentManager = agentManager;
-  req.taskQueue = taskQueue;
-  req.orchestrator = orchestrator;
-  req.acpServer = acpServer;
-  next();
-});
+  app.use((req, _res, next) => {
+    req.db = db;
+    req.agentManager = agentManager;
+    req.taskQueue = taskQueue;
+    req.orchestrator = orchestrator;
+    req.acpServer = acpServer;
+    next();
+  });
 
-app.use('/api/auth', authRoutes);
-app.use('/api/agents', agentRoutes);
-app.use('/api/tasks', taskRoutes);
-app.use('/api/wallet', walletRoutes);
-app.use('/api/logs', logRoutes);
+  app.use('/api/auth', authRoutes);
+  app.use('/api/agents', agentRoutes);
+  app.use('/api/tasks', taskRoutes);
+  app.use('/api/wallet', walletRoutes);
+  app.use('/api/logs', logRoutes);
 
-app.get('/api/health', (_req, res) => {
-  res.json({ status: 'ok', timestamp: new Date().toISOString() });
-});
+  app.get('/api/health', (_req, res) => {
+    res.json({ status: 'ok', timestamp: new Date().toISOString() });
+  });
 
-const PORT = process.env.PORT || 4000;
+  const PORT = process.env.PORT || 4000;
 
-orchestrator.start();
+  orchestrator.start();
 
-server.listen(PORT, () => {
-  console.log(`NexusAI ACP Backend running on port ${PORT}`);
-  console.log(`WebSocket ACP server ready`);
+  server.listen(PORT, () => {
+    console.log(`NexusAI ACP Backend running on port ${PORT}`);
+    console.log(`WebSocket ACP server ready`);
+  });
+}
+
+start().catch(err => {
+  console.error('Failed to start server:', err);
+  process.exit(1);
 });

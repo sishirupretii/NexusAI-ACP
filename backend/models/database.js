@@ -1,11 +1,120 @@
-const Database = require('better-sqlite3');
+const initSqlJs = require('sql.js');
+const fs = require('fs');
 const path = require('path');
 
-function initDB() {
-  const dbPath = path.join(__dirname, '..', 'nexusai.db');
-  const db = new Database(dbPath);
+// Wrapper that provides a better-sqlite3 compatible API on top of sql.js
+function createDBWrapper(sqlDb, dbPath) {
+  const db = {};
 
-  db.pragma('journal_mode = WAL');
+  // Save database to disk
+  const save = () => {
+    const data = sqlDb.export();
+    const buffer = Buffer.from(data);
+    fs.writeFileSync(dbPath, buffer);
+  };
+
+  // Auto-save after writes (debounced)
+  let saveTimer = null;
+  const scheduleSave = () => {
+    if (saveTimer) clearTimeout(saveTimer);
+    saveTimer = setTimeout(save, 100);
+  };
+
+  db.exec = (sql) => {
+    sqlDb.run(sql);
+    scheduleSave();
+  };
+
+  db.pragma = (pragma) => {
+    try {
+      sqlDb.run(`PRAGMA ${pragma}`);
+    } catch (e) {
+      // sql.js doesn't support all pragmas (e.g. WAL mode)
+    }
+  };
+
+  db.prepare = (sql) => {
+    return {
+      run(...params) {
+        sqlDb.run(sql, params);
+        scheduleSave();
+        return { changes: sqlDb.getRowsModified() };
+      },
+      get(...params) {
+        const stmt = sqlDb.prepare(sql);
+        stmt.bind(params);
+        if (stmt.step()) {
+          const cols = stmt.getColumnNames();
+          const vals = stmt.get();
+          stmt.free();
+          const row = {};
+          cols.forEach((col, i) => { row[col] = vals[i]; });
+          return row;
+        }
+        stmt.free();
+        return undefined;
+      },
+      all(...params) {
+        const results = [];
+        const stmt = sqlDb.prepare(sql);
+        stmt.bind(params);
+        while (stmt.step()) {
+          const cols = stmt.getColumnNames();
+          const vals = stmt.get();
+          const row = {};
+          cols.forEach((col, i) => { row[col] = vals[i]; });
+          results.push(row);
+        }
+        stmt.free();
+        return results;
+      }
+    };
+  };
+
+  db.transaction = (fn) => {
+    return (...args) => {
+      sqlDb.run('BEGIN TRANSACTION');
+      try {
+        const result = fn(...args);
+        sqlDb.run('COMMIT');
+        scheduleSave();
+        return result;
+      } catch (err) {
+        sqlDb.run('ROLLBACK');
+        throw err;
+      }
+    };
+  };
+
+  db.close = () => {
+    if (saveTimer) {
+      clearTimeout(saveTimer);
+      save();
+    }
+    sqlDb.close();
+  };
+
+  return db;
+}
+
+let _dbInstance = null;
+
+async function initDB() {
+  if (_dbInstance) return _dbInstance;
+
+  const SQL = await initSqlJs();
+  const dbPath = path.join(__dirname, '..', 'nexusai.db');
+
+  let sqlDb;
+  if (fs.existsSync(dbPath)) {
+    const fileBuffer = fs.readFileSync(dbPath);
+    sqlDb = new SQL.Database(fileBuffer);
+  } else {
+    sqlDb = new SQL.Database();
+  }
+
+  const db = createDBWrapper(sqlDb, dbPath);
+
   db.pragma('foreign_keys = ON');
 
   db.exec(`
@@ -90,6 +199,7 @@ function initDB() {
     );
   `);
 
+  _dbInstance = db;
   return db;
 }
 
