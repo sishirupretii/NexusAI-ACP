@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-function CreateAgent({ api, token }) {
+function CreateAgent({ api }) {
   const navigate = useNavigate();
   const [form, setForm] = useState({
     name: '', type: 'research', personality: '', model: 'llama3', twitterHandle: ''
@@ -19,7 +19,7 @@ function CreateAgent({ api, token }) {
     try {
       const res = await fetch(`${api}/api/agents`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(form),
       });
       const data = await res.json();

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 
-function AgentDetail({ api, token }) {
+function AgentDetail({ api }) {
   const { id } = useParams();
   const navigate = useNavigate();
   const [agent, setAgent] = useState(null);
@@ -12,18 +12,17 @@ function AgentDetail({ api, token }) {
   const [taskType, setTaskType] = useState('general');
   const [sending, setSending] = useState(false);
   const [logs, setLogs] = useState([]);
-  const headers = { Authorization: `Bearer ${token}` };
 
   const load = () => {
-    fetch(`${api}/api/agents/${id}`, { headers }).then(r => r.json()).then(setAgent).catch(() => {});
-    fetch(`${api}/api/wallet/${id}`, { headers }).then(r => r.json()).then(d => {
+    fetch(`${api}/api/agents/${id}`).then(r => r.json()).then(setAgent).catch(() => {});
+    fetch(`${api}/api/wallet/${id}`).then(r => r.json()).then(d => {
       if (d.wallet) setWallet(d.wallet);
       if (d.transactions) setTransactions(d.transactions);
     }).catch(() => {});
-    fetch(`${api}/api/agents/${id}/memory`, { headers }).then(r => r.json()).then(d => {
+    fetch(`${api}/api/agents/${id}/memory`).then(r => r.json()).then(d => {
       if (Array.isArray(d)) setMemory(d);
     }).catch(() => {});
-    fetch(`${api}/api/logs/agent/${id}`, { headers }).then(r => r.json()).then(d => {
+    fetch(`${api}/api/logs/agent/${id}`).then(r => r.json()).then(d => {
       if (Array.isArray(d)) setLogs(d);
     }).catch(() => {});
   };
@@ -37,7 +36,7 @@ function AgentDetail({ api, token }) {
     try {
       await fetch(`${api}/api/tasks`, {
         method: 'POST',
-        headers: { ...headers, 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ agentId: id, type: taskType, description: taskDesc }),
       });
       setTaskDesc('');
@@ -49,7 +48,7 @@ function AgentDetail({ api, token }) {
   const updateStatus = async (status) => {
     await fetch(`${api}/api/agents/${id}/status`, {
       method: 'PATCH',
-      headers: { ...headers, 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ status }),
     });
     load();
@@ -57,15 +56,21 @@ function AgentDetail({ api, token }) {
 
   const deleteAgent = async () => {
     if (!window.confirm('Delete this agent? This cannot be undone.')) return;
-    await fetch(`${api}/api/agents/${id}`, { method: 'DELETE', headers });
+    await fetch(`${api}/api/agents/${id}`, { method: 'DELETE' });
     navigate('/');
   };
 
-  if (!agent) return <div style={{ color: '#8888aa', padding: 40 }}>Loading agent...</div>;
+  if (!agent) return <div className="loading-state">Loading agent...</div>;
 
   return (
     <div>
-      <h1 className="page-title">{agent.name}</h1>
+      <div className="agent-detail-header">
+        <div className="agent-avatar-lg">{agent.name.charAt(0).toUpperCase()}</div>
+        <div>
+          <h1 className="page-title" style={{ marginBottom: 4 }}>{agent.name}</h1>
+          <span className={`badge badge-${agent.status}`}>{agent.status}</span>
+        </div>
+      </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20, marginBottom: 24 }}>
         <div className="card">

@@ -1,15 +1,14 @@
 import React, { useState, useEffect } from 'react';
 
-function Tasks({ api, token }) {
+function Tasks({ api }) {
   const [tasks, setTasks] = useState([]);
   const [agents, setAgents] = useState([]);
   const [form, setForm] = useState({ agentId: '', type: 'general', description: '' });
   const [sending, setSending] = useState(false);
-  const headers = { Authorization: `Bearer ${token}` };
 
   const load = () => {
-    fetch(`${api}/api/tasks`, { headers }).then(r => r.json()).then(d => { if (Array.isArray(d)) setTasks(d); });
-    fetch(`${api}/api/agents`, { headers }).then(r => r.json()).then(d => { if (Array.isArray(d)) setAgents(d); });
+    fetch(`${api}/api/tasks`).then(r => r.ok ? r.json() : []).then(d => { if (Array.isArray(d)) setTasks(d); }).catch(() => {});
+    fetch(`${api}/api/agents`).then(r => r.ok ? r.json() : []).then(d => { if (Array.isArray(d)) setAgents(d); }).catch(() => {});
   };
 
   useEffect(() => { load(); const iv = setInterval(load, 5000); return () => clearInterval(iv); }, []);
@@ -21,7 +20,7 @@ function Tasks({ api, token }) {
     try {
       await fetch(`${api}/api/tasks`, {
         method: 'POST',
-        headers: { ...headers, 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           agentId: form.agentId || undefined,
           type: form.type,

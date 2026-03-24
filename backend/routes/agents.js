@@ -1,10 +1,7 @@
 const express = require('express');
 const { v4: uuidv4 } = require('uuid');
-const { authMiddleware } = require('../middleware/auth');
 
 const router = express.Router();
-
-router.use(authMiddleware);
 
 router.post('/', (req, res) => {
   const { name, type, personality, model, twitterHandle } = req.body;
@@ -34,10 +31,10 @@ router.post('/', (req, res) => {
   );
 
   const txn = req.db.transaction(() => {
-    insertAgent.run(agentId, req.userId, name, type, personality || '', model || 'llama3', twitterHandle || '');
+    insertAgent.run(agentId, 'public', name, type, personality || '', model || 'llama3', twitterHandle || '');
     insertWallet.run(walletId, agentId, 100.0);
     insertTx.run(uuidv4(), walletId, 100.0, 'credit', 'Initial agent balance');
-    insertLog.run(uuidv4(), agentId, req.userId, 'agent_created', `Agent "${name}" (${type}) created`);
+    insertLog.run(uuidv4(), agentId, 'public', 'agent_created', `Agent "${name}" (${type}) created`);
   });
 
   txn();
@@ -54,9 +51,8 @@ router.get('/', (req, res) => {
   const agents = req.db.prepare(
     `SELECT a.*, w.balance FROM agents a
      LEFT JOIN wallets w ON w.agent_id = a.id
-     WHERE a.user_id = ?
      ORDER BY a.created_at DESC`
-  ).all(req.userId);
+  ).all();
   res.json(agents);
 });
 
@@ -64,8 +60,8 @@ router.get('/:id', (req, res) => {
   const agent = req.db.prepare(
     `SELECT a.*, w.balance FROM agents a
      LEFT JOIN wallets w ON w.agent_id = a.id
-     WHERE a.id = ? AND a.user_id = ?`
-  ).get(req.params.id, req.userId);
+     WHERE a.id = ?`
+  ).get(req.params.id);
 
   if (!agent) return res.status(404).json({ error: 'Agent not found' });
   res.json(agent);
@@ -78,18 +74,18 @@ router.patch('/:id/status', (req, res) => {
     return res.status(400).json({ error: `Status must be one of: ${validStatuses.join(', ')}` });
   }
 
-  const agent = req.db.prepare('SELECT * FROM agents WHERE id = ? AND user_id = ?').get(req.params.id, req.userId);
+  const agent = req.db.prepare('SELECT * FROM agents WHERE id = ?').get(req.params.id);
   if (!agent) return res.status(404).json({ error: 'Agent not found' });
 
   req.db.prepare('UPDATE agents SET status = ? WHERE id = ?').run(status, req.params.id);
   req.db.prepare('INSERT INTO activity_logs (id, agent_id, user_id, action, details) VALUES (?, ?, ?, ?, ?)')
-    .run(uuidv4(), req.params.id, req.userId, 'status_change', `Status changed to ${status}`);
+    .run(uuidv4(), req.params.id, 'public', 'status_change', `Status changed to ${status}`);
 
   res.json({ id: req.params.id, status });
 });
 
 router.delete('/:id', (req, res) => {
-  const agent = req.db.prepare('SELECT * FROM agents WHERE id = ? AND user_id = ?').get(req.params.id, req.userId);
+  const agent = req.db.prepare('SELECT * FROM agents WHERE id = ?').get(req.params.id);
   if (!agent) return res.status(404).json({ error: 'Agent not found' });
 
   const txn = req.db.transaction(() => {
@@ -110,7 +106,7 @@ router.delete('/:id', (req, res) => {
 });
 
 router.get('/:id/memory', (req, res) => {
-  const agent = req.db.prepare('SELECT * FROM agents WHERE id = ? AND user_id = ?').get(req.params.id, req.userId);
+  const agent = req.db.prepare('SELECT * FROM agents WHERE id = ?').get(req.params.id);
   if (!agent) return res.status(404).json({ error: 'Agent not found' });
 
   const memory = req.db.prepare('SELECT * FROM agent_memory WHERE agent_id = ? ORDER BY created_at DESC').all(req.params.id);

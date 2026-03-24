@@ -1,21 +1,20 @@
 import React, { useState, useEffect } from 'react';
 
-function Logs({ api, token }) {
+function Logs({ api }) {
   const [logs, setLogs] = useState([]);
-  const headers = { Authorization: `Bearer ${token}` };
 
   const load = () => {
-    fetch(`${api}/api/logs`, { headers }).then(r => r.json()).then(d => { if (Array.isArray(d)) setLogs(d); });
+    fetch(`${api}/api/logs`).then(r => r.ok ? r.json() : []).then(d => { if (Array.isArray(d)) setLogs(d); }).catch(() => {});
   };
 
   useEffect(() => { load(); const iv = setInterval(load, 4000); return () => clearInterval(iv); }, []);
 
   return (
     <div>
-      <h1 className="page-title">Activity Logs</h1>
+      <h1 className="page-title">Activity Feed</h1>
 
       {logs.length === 0 ? (
-        <div className="card empty-state"><p>No activity yet. Create agents and assign tasks to see logs.</p></div>
+        <div className="card empty-state"><p>No activity yet. Create agents and assign tasks to see the feed.</p></div>
       ) : (
         <div className="card log-list">
           {logs.map(log => (

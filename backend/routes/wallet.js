@@ -1,12 +1,9 @@
 const express = require('express');
-const { authMiddleware } = require('../middleware/auth');
 
 const router = express.Router();
 
-router.use(authMiddleware);
-
 router.get('/:agentId', (req, res) => {
-  const agent = req.db.prepare('SELECT * FROM agents WHERE id = ? AND user_id = ?').get(req.params.agentId, req.userId);
+  const agent = req.db.prepare('SELECT * FROM agents WHERE id = ?').get(req.params.agentId);
   if (!agent) return res.status(404).json({ error: 'Agent not found' });
 
   const wallet = req.db.prepare('SELECT * FROM wallets WHERE agent_id = ?').get(req.params.agentId);
