@@ -115,7 +115,8 @@ async function initDB() {
 
   const db = createDBWrapper(sqlDb, dbPath);
 
-  db.pragma('foreign_keys = ON');
+  // Disable foreign keys since auth was removed (user_id = 'public' has no matching users row)
+  db.pragma('foreign_keys = OFF');
 
   db.exec(`
     CREATE TABLE IF NOT EXISTS users (
@@ -127,22 +128,20 @@ async function initDB() {
 
     CREATE TABLE IF NOT EXISTS agents (
       id TEXT PRIMARY KEY,
-      user_id TEXT NOT NULL,
+      user_id TEXT NOT NULL DEFAULT 'public',
       name TEXT NOT NULL,
       type TEXT NOT NULL CHECK(type IN ('twitter','research','growth','trading')),
       status TEXT DEFAULT 'idle' CHECK(status IN ('idle','active','paused','error')),
       personality TEXT DEFAULT '',
       model TEXT DEFAULT 'llama3',
       twitter_handle TEXT DEFAULT '',
-      created_at TEXT DEFAULT (datetime('now')),
-      FOREIGN KEY (user_id) REFERENCES users(id)
+      created_at TEXT DEFAULT (datetime('now'))
     );
 
     CREATE TABLE IF NOT EXISTS wallets (
       id TEXT PRIMARY KEY,
       agent_id TEXT UNIQUE NOT NULL,
-      balance REAL DEFAULT 100.0,
-      FOREIGN KEY (agent_id) REFERENCES agents(id)
+      balance REAL DEFAULT 100.0
     );
 
     CREATE TABLE IF NOT EXISTS transactions (
@@ -151,13 +150,12 @@ async function initDB() {
       amount REAL NOT NULL,
       type TEXT NOT NULL CHECK(type IN ('credit','debit')),
       description TEXT DEFAULT '',
-      created_at TEXT DEFAULT (datetime('now')),
-      FOREIGN KEY (wallet_id) REFERENCES wallets(id)
+      created_at TEXT DEFAULT (datetime('now'))
     );
 
     CREATE TABLE IF NOT EXISTS tasks (
       id TEXT PRIMARY KEY,
-      user_id TEXT NOT NULL,
+      user_id TEXT NOT NULL DEFAULT 'public',
       agent_id TEXT,
       parent_task_id TEXT,
       type TEXT NOT NULL,
@@ -166,9 +164,7 @@ async function initDB() {
       result TEXT DEFAULT '',
       cost REAL DEFAULT 1.0,
       created_at TEXT DEFAULT (datetime('now')),
-      completed_at TEXT,
-      FOREIGN KEY (user_id) REFERENCES users(id),
-      FOREIGN KEY (agent_id) REFERENCES agents(id)
+      completed_at TEXT
     );
 
     CREATE TABLE IF NOT EXISTS agent_memory (
@@ -176,8 +172,7 @@ async function initDB() {
       agent_id TEXT NOT NULL,
       key TEXT NOT NULL,
       value TEXT NOT NULL,
-      created_at TEXT DEFAULT (datetime('now')),
-      FOREIGN KEY (agent_id) REFERENCES agents(id)
+      created_at TEXT DEFAULT (datetime('now'))
     );
 
     CREATE TABLE IF NOT EXISTS activity_logs (
