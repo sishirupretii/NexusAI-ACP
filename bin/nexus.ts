@@ -114,6 +114,22 @@ function buildHelp(): string {
     cmd("skill list", "List installed skills"),
     cmd("skill remove <name>", "Remove an installed skill"),
     "",
+    cmd("clawlancer browse [query]", "Browse Clawlancer bounty board"),
+    cmd("clawlancer claim <id>", "Claim a bounty"),
+    cmd("clawlancer deliver <id>", "Deliver bounty work"),
+    cmd("clawlancer my", "Show your claimed bounties"),
+    cmd("clawlancer auto-claim", "Toggle auto-claim mode"),
+    "",
+    cmd("reputation", "Show your on-chain reputation score"),
+    cmd("reputation history", "View reputation history"),
+    "",
+    cmd("x402 status", "x402 payment protocol status"),
+    cmd("x402 enable", "Enable x402 micropayments"),
+    cmd("x402 pay <wallet> <amount>", "Send x402 payment"),
+    cmd("x402 history", "Payment history"),
+    "",
+    cmd("quickdeploy [name]", "One-click agent deployment"),
+    "",
     section("Standard ACP Commands"),
     cmd("setup", "Interactive setup (login + create agent)"),
     cmd("login", "Re-authenticate session"),
@@ -271,6 +287,59 @@ async function main(): Promise<void> {
     if (subcommand === "remove") return skill.remove(rest[0]);
     console.log(buildHelp());
     return;
+  }
+
+  if (command === "clawlancer") {
+    requireApiKey();
+    const clawlancer = await import("../src/commands/clawlancer.js");
+    if (!subcommand || subcommand === "browse") {
+      const category = getFlagValue(rest, "--category");
+      const minStr = getFlagValue(rest, "--min-reward");
+      const maxStr = getFlagValue(rest, "--max-reward");
+      return clawlancer.browse(rest[0], {
+        category,
+        minReward: minStr ? parseFloat(minStr) : undefined,
+        maxReward: maxStr ? parseFloat(maxStr) : undefined,
+      });
+    }
+    if (subcommand === "claim") return clawlancer.claim(rest[0]);
+    if (subcommand === "deliver") return clawlancer.deliver(rest[0], rest.slice(1).join(" "));
+    if (subcommand === "my") return clawlancer.myBounties();
+    if (subcommand === "auto-claim") {
+      const enable = hasFlag(rest, "--enable");
+      const disable = hasFlag(rest, "--disable");
+      const filters = getFlagValue(rest, "--filters");
+      return clawlancer.autoClaim({ enable: enable ? true : disable ? false : undefined, filters });
+    }
+    console.log(buildHelp());
+    return;
+  }
+
+  if (command === "reputation") {
+    requireApiKey();
+    const reputation = await import("../src/commands/reputation.js");
+    if (subcommand === "history") return reputation.history();
+    return reputation.show();
+  }
+
+  if (command === "x402") {
+    requireApiKey();
+    const x402 = await import("../src/commands/x402.js");
+    if (subcommand === "enable") return x402.enable();
+    if (subcommand === "disable") return x402.disable();
+    if (subcommand === "pay") {
+      const chain = getFlagValue(rest.slice(1), "--chain");
+      const desc = getFlagValue(rest.slice(1), "--description");
+      return x402.pay(rest[0], parseFloat(rest[1]), { chain, description: desc });
+    }
+    if (subcommand === "history") return x402.history();
+    return x402.status();
+  }
+
+  if (command === "quickdeploy") {
+    const quickdeploy = await import("../src/commands/quickdeploy.js");
+    const strategy = getFlagValue(rest, "--strategy");
+    return quickdeploy.deploy(subcommand, { strategy });
   }
 
   // -- Delegate standard ACP commands to acp.ts logic --
