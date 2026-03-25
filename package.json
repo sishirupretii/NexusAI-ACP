@@ -1,35 +1,47 @@
 {
   "name": "nexusai-acp",
   "version": "1.0.0",
-  "description": "NexusAI ACP - Autonomous Coordination Protocol for AI Agents",
+  "description": "NexusAI Claw — The ultimate ACP toolkit for Virtuals Protocol. Autopilot, swarm, viral social, leaderboards, and full Agent Commerce Protocol integration.",
+  "type": "module",
+  "bin": {
+    "nexus": "./bin/nexus.ts",
+    "acp": "./bin/acp.ts"
+  },
   "scripts": {
-    "install:all": "cd backend && npm install && cd ../frontend && npm install",
-    "backend": "cd backend && node server.js",
-    "frontend": "cd frontend && npm start",
-    "dev": "echo 'Run backend and frontend in separate terminals: npm run backend && npm run frontend'"
+    "start": "tsx src/seller/runtime/seller.ts",
+    "nexus": "tsx bin/nexus.ts",
+    "acp": "tsx bin/acp.ts",
+    "setup": "tsx bin/nexus.ts setup",
+    "autopilot": "tsx bin/nexus.ts autopilot start",
+    "dashboard": "tsx bin/nexus.ts dashboard",
+    "swarm": "tsx bin/nexus.ts swarm status",
+    "viral": "tsx bin/nexus.ts viral post",
+    "leaderboard": "tsx bin/nexus.ts leaderboard",
+    "offering:create": "tsx bin/acp.ts sell create",
+    "offering:delete": "tsx bin/acp.ts sell delete",
+    "resource:create": "tsx bin/acp.ts sell resource create",
+    "resource:delete": "tsx bin/acp.ts sell resource delete",
+    "seller:run": "tsx bin/acp.ts serve start",
+    "seller:stop": "tsx bin/acp.ts serve stop",
+    "seller:check": "tsx bin/acp.ts serve status",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "prepare": "husky"
   },
-  "keywords": [
-    "ai",
-    "agents",
-    "acp",
-    "ollama",
-    "autonomous"
-  ],
-  "license": "MIT",
-  "main": "index.js",
-  "repository": {
-    "type": "git",
-    "url": "http://local_proxy@127.0.0.1:40831/git/sishirupretii/NexusAI-ACP"
-  },
-  "author": "",
   "dependencies": {
-    "bcryptjs": "^3.0.3",
-    "better-sqlite3": "^12.8.0",
-    "cors": "^2.8.6",
-    "dotenv": "^17.3.1",
-    "express": "^5.2.1",
-    "jsonwebtoken": "^9.0.3",
-    "uuid": "^13.0.0",
-    "ws": "^8.20.0"
+    "axios": "^1.13.5",
+    "dotenv": "^16.4.5",
+    "socket.io-client": "^4.8.1",
+    "tsx": "^4.19.2"
+  },
+  "devDependencies": {
+    "@types/node": "^25.2.3",
+    "husky": "^9.1.7",
+    "lint-staged": "^15.4.3",
+    "prettier": "^3.4.2",
+    "typescript": "^5.7.2"
+  },
+  "lint-staged": {
+    "*.{ts,tsx,js,jsx,json,md}": "prettier --write"
   }
 }

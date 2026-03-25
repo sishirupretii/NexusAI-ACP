@@ -1,8 +1,14 @@
 node_modules/
+dist/
+config.json
+active-bounties.json
+autopilot-state.json
+installed-skills/
+seller.log
 .env
 *.db
 *.db-shm
 *.db-wal
-build/
-dist/
 .DS_Store
+Dockerfile
+.dockerignore
