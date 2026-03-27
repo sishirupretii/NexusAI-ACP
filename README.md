@@ -168,6 +168,51 @@ nexus skill list
 nexus skill remove some-skill
 ```
 
+## NexusAI AGI — Open Source AGI Framework
+
+NexusAI AGI is an open-source Artificial General Intelligence framework built into this repo. It features multi-strategy reasoning, persistent memory, autonomous planning, extensible tools, safety guardrails, and multi-agent communication — all with zero external dependencies.
+
+### AGI Quick Start
+
+```bash
+cd nexusai-agi
+pip install -e .          # Python 3.10+
+nexusagi benchmark        # 10/10 tests, 100% score
+nexusagi chat             # Interactive AGI chat
+```
+
+### Use in Python
+
+```python
+from nexusai_agi import AGIAgent
+
+agent = AGIAgent()
+response = agent.think("How does machine learning work?")
+print(response)
+
+# Math: "What is 42 * 7?" → "The result of 42 * 7 is **294**."
+# Goals: agent.set_goal("Learn AI safety", priority=2)
+# Status: agent.get_status()
+```
+
+### AGI Architecture
+
+| Module            | Description                                                           |
+| ----------------- | --------------------------------------------------------------------- |
+| **Reasoning**     | Chain-of-thought, tree-of-thought, self-reflection                    |
+| **Memory**        | Short-term, long-term, episodic, semantic with persistence            |
+| **Planning**      | Goal decomposition with dependency tracking                           |
+| **Tools**         | Extensible registry + built-in tools (math, memory, goals)            |
+| **Safety**        | Input/output filtering, rate limiting, blocked patterns               |
+| **Communication** | Multi-agent hub with channels, direct messaging, capability discovery |
+| **CLI**           | `nexusagi chat`, `think`, `benchmark`, `status`, `config`             |
+
+**86 tests passing** | **10/10 benchmark score** | **0 external dependencies**
+
+See [`nexusai-agi/README.md`](./nexusai-agi/README.md) for full documentation.
+
+---
+
 ## Standard ACP Commands
 
 All standard ACP commands work with both `nexus` and `acp`:
@@ -233,40 +278,30 @@ This repo works as an OpenClaw skill. Agents should append `--json` to all comma
 ## Repository Structure
 
 ```
-nexusai-claw/
+NexusAI-ACP/
 ├── bin/
 │   ├── nexus.ts              # NexusAI Claw CLI (extended)
 │   └── acp.ts                # Standard ACP CLI (OpenClaw-compatible)
 ├── frontend/
-│   ├── index.html            # Landing page
+│   ├── index.html            # Landing page (ACP + AGI)
 │   └── style.css             # Styles
+├── nexusai-agi/              # AGI Framework (Python)
+│   ├── nexusai_agi/
+│   │   ├── core/             # Agent, config, types
+│   │   ├── memory/           # Memory store & manager
+│   │   ├── reasoning/        # Multi-strategy reasoning engine
+│   │   ├── planning/         # Goal decomposition & planner
+│   │   ├── tools/            # Extensible tool registry
+│   │   ├── safety/           # Safety guardian & guardrails
+│   │   ├── communication/    # Multi-agent messaging hub
+│   │   └── cli.py            # CLI entry point
+│   ├── tests/                # 86 tests
+│   ├── examples/             # Usage examples
+│   ├── configs/              # Default config
+│   └── pyproject.toml        # Python package config
 ├── src/
-│   ├── commands/
-│   │   ├── quickdeploy.ts    # One-click agent deployment
-│   │   ├── clawlancer.ts     # Clawlancer bounty integration
-│   │   ├── x402.ts           # x402 payment protocol
-│   │   ├── reputation.ts     # On-chain reputation system
-│   │   ├── autopilot.ts      # Autonomous marketplace agent
-│   │   ├── dashboard.ts      # Revenue & activity dashboard
-│   │   ├── swarm.ts          # Multi-agent coordination
-│   │   ├── viral.ts          # Viral Twitter engine
-│   │   ├── leaderboard.ts    # Competitive rankings
-│   │   ├── skill.ts          # GitHub skill installer
-│   │   ├── setup.ts          # Interactive setup
-│   │   ├── wallet.ts         # Wallet management
-│   │   ├── job.ts            # Job lifecycle
-│   │   ├── search.ts         # Marketplace search
-│   │   ├── sell.ts           # Service offerings
-│   │   ├── serve.ts          # Seller runtime
-│   │   ├── token.ts          # Token management
-│   │   ├── profile.ts        # Profile management
-│   │   ├── bounty.ts         # Bounty system
-│   │   ├── agent.ts          # Agent management
-│   │   ├── twitter.ts        # Twitter/X integration
-│   │   ├── resource.ts       # Resource queries
-│   │   ├── subscription.ts   # Subscription tiers
-│   │   └── deploy.ts         # Cloud deployment
-│   ├── lib/                  # Shared utilities (config, auth, API client, output)
+│   ├── commands/             # All CLI commands (25+ commands)
+│   ├── lib/                  # Shared utilities (config, auth, API, output)
 │   ├── seller/runtime/       # WebSocket seller runtime (Socket.io)
 │   └── deploy/               # Docker & Railway helpers
 ├── references/               # Detailed reference docs
@@ -277,7 +312,8 @@ nexusai-claw/
 
 ## Tech Stack
 
-- **Runtime:** Node.js + TypeScript via `tsx`
+- **ACP CLI:** Node.js + TypeScript via `tsx`
+- **AGI Framework:** Python 3.10+ (zero dependencies)
 - **ACP API:** `claw-api.virtuals.io` (Axios HTTP client)
 - **Auth:** `acpx.virtuals.io` (JWT + polling-based login)
 - **Seller Runtime:** Socket.io WebSocket connection
