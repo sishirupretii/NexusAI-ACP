@@ -1,0 +1,39 @@
+{
+  "name": "NexusAI",
+  "version": "0.1.0",
+  "memory": {
+    "short_term_capacity": 100,
+    "long_term_capacity": 10000,
+    "episodic_capacity": 5000,
+    "similarity_threshold": 0.7,
+    "consolidation_interval": 50
+  },
+  "reasoning": {
+    "default_strategy": "chain_of_thought",
+    "max_reasoning_steps": 20,
+    "self_reflection_enabled": true,
+    "confidence_threshold": 0.6,
+    "tree_of_thought_branches": 3,
+    "tree_of_thought_depth": 3
+  },
+  "planning": {
+    "max_plan_depth": 10,
+    "max_retries": 3,
+    "replan_on_failure": true,
+    "parallel_execution": false
+  },
+  "safety": {
+    "enabled": true,
+    "max_actions_per_minute": 30,
+    "blocked_patterns": [],
+    "require_confirmation_for": ["file_delete", "system_command", "network_request"]
+  },
+  "llm": {
+    "provider": "none",
+    "model": "",
+    "temperature": 0.7,
+    "max_tokens": 4096
+  },
+  "tools_enabled": true,
+  "verbose": false
+}

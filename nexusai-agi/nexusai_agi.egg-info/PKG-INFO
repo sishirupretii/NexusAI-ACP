@@ -1,0 +1,31 @@
+Metadata-Version: 2.4
+Name: nexusai-agi
+Version: 0.1.0
+Summary: NexusAI AGI - Open source Artificial General Intelligence framework
+Author: NexusAI Team
+License: MIT
+Project-URL: Homepage, https://github.com/sishirupretii/NexusAI-ACP
+Project-URL: Repository, https://github.com/sishirupretii/NexusAI-ACP
+Keywords: agi,ai,artificial-general-intelligence,autonomous-agents
+Classifier: Development Status :: 3 - Alpha
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Classifier: Topic :: Scientific/Engineering :: Artificial Intelligence
+Requires-Python: >=3.10
+Description-Content-Type: text/markdown
+Provides-Extra: llm
+Requires-Dist: openai>=1.0.0; extra == "llm"
+Requires-Dist: anthropic>=0.20.0; extra == "llm"
+Provides-Extra: web
+Requires-Dist: aiohttp>=3.9.0; extra == "web"
+Provides-Extra: all
+Requires-Dist: openai>=1.0.0; extra == "all"
+Requires-Dist: anthropic>=0.20.0; extra == "all"
+Requires-Dist: aiohttp>=3.9.0; extra == "all"
+Provides-Extra: dev
+Requires-Dist: pytest>=7.0; extra == "dev"
+Requires-Dist: pytest-asyncio>=0.21.0; extra == "dev"

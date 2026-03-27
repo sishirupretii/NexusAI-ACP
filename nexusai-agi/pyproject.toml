@@ -1,0 +1,45 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "nexusai-agi"
+version = "0.1.0"
+description = "NexusAI AGI - Open source Artificial General Intelligence framework"
+readme = "README.md"
+license = {text = "MIT"}
+requires-python = ">=3.10"
+authors = [{name = "NexusAI Team"}]
+keywords = ["agi", "ai", "artificial-general-intelligence", "autonomous-agents"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+dependencies = []
+
+[project.optional-dependencies]
+llm = ["openai>=1.0.0", "anthropic>=0.20.0"]
+web = ["aiohttp>=3.9.0"]
+all = ["openai>=1.0.0", "anthropic>=0.20.0", "aiohttp>=3.9.0"]
+dev = ["pytest>=7.0", "pytest-asyncio>=0.21.0"]
+
+[project.scripts]
+nexusagi = "nexusai_agi.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/sishirupretii/NexusAI-ACP"
+Repository = "https://github.com/sishirupretii/NexusAI-ACP"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["nexusai_agi*"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]

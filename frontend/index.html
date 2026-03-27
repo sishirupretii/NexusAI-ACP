@@ -23,6 +23,7 @@
       <nav>
         <a href="#features">Features</a>
         <a href="#install">Install</a>
+        <a href="#agi">AGI</a>
         <a href="#clawlancer">Clawlancer</a>
         <a href="#commands">Commands</a>
         <a href="https://app.virtuals.io/acp" target="_blank" class="btn btn-sm btn-accent">Launch App</a>
@@ -410,6 +411,119 @@
         <div class="arch-node">
           <div class="arch-label">Reputation</div>
           <div class="arch-desc">On-Chain Score</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- NexusAI AGI -->
+  <section id="agi" class="agi-section">
+    <div class="container">
+      <div class="badge-row">
+        <div class="badge badge-green">NEW</div>
+        <div class="badge">Open Source AGI</div>
+      </div>
+      <h2>NexusAI AGI Framework</h2>
+      <p class="section-sub">Open source Artificial General Intelligence. Multi-strategy reasoning, persistent memory, autonomous planning, and safety guardrails. Works standalone or integrated with NexusAI ACP.</p>
+      <div class="grid-3">
+        <div class="card">
+          <div class="card-icon">🧠</div>
+          <h3>Multi-Strategy Reasoning</h3>
+          <p>Chain-of-thought, tree-of-thought, and self-reflection. Automatically selects the best reasoning strategy for each query.</p>
+        </div>
+        <div class="card">
+          <div class="card-icon">💾</div>
+          <h3>Persistent Memory</h3>
+          <p>Short-term, long-term, episodic, and semantic memory. Keyword search, tag filtering, automatic consolidation, and disk persistence.</p>
+        </div>
+        <div class="card">
+          <div class="card-icon">📋</div>
+          <h3>Autonomous Planning</h3>
+          <p>Goal decomposition into actionable steps. Domain-specific planning for build, analyze, learn, and fix tasks with dependency tracking.</p>
+        </div>
+        <div class="card">
+          <div class="card-icon">🔧</div>
+          <h3>Extensible Tools</h3>
+          <p>Register custom tools with the tool registry. Built-in memory search, math calculation, and goal management tools.</p>
+        </div>
+        <div class="card">
+          <div class="card-icon">🛡️</div>
+          <h3>Safety Guardrails</h3>
+          <p>Input/output filtering, rate limiting, action confirmation, blocked patterns, and ethical guidelines. Safety-first design.</p>
+        </div>
+        <div class="card">
+          <div class="card-icon">🌐</div>
+          <h3>Multi-Agent Communication</h3>
+          <p>Communication hub for agent coordination. Channel-based messaging, direct messages, request/response patterns, and capability discovery.</p>
+        </div>
+      </div>
+
+      <h3 style="margin-top: 3rem; text-align: center;">Install NexusAI AGI</h3>
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-content">
+            <h3>Install</h3>
+            <div class="terminal">
+              <div class="terminal-bar">
+                <span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span>
+              </div>
+              <pre><code><span class="t-gray"># Clone the repository</span>
+<span class="t-gray">$</span> git clone https://github.com/sishirupretii/NexusAI-ACP
+<span class="t-gray">$</span> cd NexusAI-ACP/nexusai-agi
+
+<span class="t-gray"># Install (Python 3.10+)</span>
+<span class="t-gray">$</span> pip install -e .
+
+<span class="t-gray"># With LLM support (optional)</span>
+<span class="t-gray">$</span> pip install -e ".[llm]"</code></pre>
+            </div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-content">
+            <h3>Use the CLI</h3>
+            <div class="terminal">
+              <div class="terminal-bar">
+                <span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span>
+              </div>
+              <pre><code><span class="t-gray"># Interactive chat mode</span>
+<span class="t-gray">$</span> nexusagi chat
+
+<span class="t-gray"># Single query</span>
+<span class="t-gray">$</span> nexusagi think "What is machine learning?"
+
+<span class="t-gray"># Run benchmarks</span>
+<span class="t-gray">$</span> nexusagi benchmark
+<span class="t-green">Results: 10/10 tests passed</span>
+<span class="t-green">Score: 100%</span></code></pre>
+            </div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-content">
+            <h3>Use in Python</h3>
+            <div class="terminal">
+              <div class="terminal-bar">
+                <span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span>
+              </div>
+              <pre><code><span class="t-cyan">from</span> nexusai_agi <span class="t-cyan">import</span> AGIAgent
+
+agent = AGIAgent()
+
+<span class="t-gray"># Reason, remember, and plan</span>
+response = agent.think(<span class="t-green">"How does photosynthesis work?"</span>)
+print(response)
+
+<span class="t-gray"># Set goals</span>
+agent.set_goal(<span class="t-green">"Learn about AI safety"</span>, priority=2)
+
+<span class="t-gray"># Check status</span>
+print(agent.get_status())</code></pre>
+            </div>
+          </div>
         </div>
       </div>
     </div>
